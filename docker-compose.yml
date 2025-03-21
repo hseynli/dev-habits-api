@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: API/Dockerfile
+    container_name: devhabit.api
+    ports:
+      - "8080:8080"  # Map host port 8080 to container port 8080
+      - "8081:8081"  # Map host port 8081 to container port 8081
+    environment:
+      # Use one of the following to configure the OpenTelemetry exporter (Uncomment Seq if you want to use Seq):
+      # Seq
+      # - OTEL_EXPORTER_OTLP_ENDPOINT=http://devhabit.seq:5341/ingest/otlp
+      # - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      # Aspire Dashboard
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://devhabit.aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - ASPNETCORE_URLS=http://+:8080  # Ensure the app listens on port 8080
+    depends_on:
+      - devhabit.seq  # Ensure Seq starts before the API
+
+  devhabit.seq:
+    image: datalust/seq:2024.3
+    container_name: devhabit.seq
+    environment:
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ./.containers/seq_data:/data
+    ports:
+      - "8082:80"     # Map host port 8082 to Seq's HTTP port (80 in the container)
+      - "5341:5341"   # Map host port 5341 to Seq's ingestion port
+
+  devhabit.aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    container_name: devhabit.aspire-dashboard
+    environment:
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "true"
+    ports:
+      - "18888:18888"  # Map host port 18888 to container port 18888
