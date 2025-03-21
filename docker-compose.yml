@@ -22,6 +22,17 @@ services:
     depends_on:
       - devhabit.seq  # Ensure Seq starts before the API
 
+  # devhabit.postgres:
+  #   image: postgres:17.2 # or latest
+  #   environment:
+  #     POSTGRES_DB: devhabit
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   volumes:
+  #     - ./.containers/postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - 5432:5432
+
   devhabit.seq:
     image: datalust/seq:2024.3
     container_name: devhabit.seq

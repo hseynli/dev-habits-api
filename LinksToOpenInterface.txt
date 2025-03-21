@@ -4,3 +4,6 @@ http://localhost:8082/#/events?range=1d
 http://localhost:8080/weatherforecast
 --Aspire url
 http://localhost:18888/structuredlogs
+
+--Docker commands
+docker-compose up devhabit.postgres devhabit.seq devhabit.aspire-dashboard
